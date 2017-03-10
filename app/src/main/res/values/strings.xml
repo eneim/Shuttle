@@ -434,6 +434,9 @@
     <string name="pref_title_rate">Say Thanks</string>
     <string name="pref_summary_rate">If you like Shuttle, please consider leaving a review.</string>
 
+    <string name="pref_title_headset_beep">Beep on Skip</string>
+    <string name="pref_summary_headset_beep">Beep when skipping song via headset controls</string>
+
     <!-- Settings title for ignore playlist duplicates -->
     <string name="pref_title_ignore_duplicates">Ignore playlist duplicates</string>
     <!-- Settings summary for ignore playlist duplicates -->
@@ -715,11 +718,15 @@
     <!-- Accessibility button description -->
     <string name="btn_pause">Pause</string>
     <!-- Accessibility button description -->
+    <string name="btn_play_pause">Play/Pause</string>
+    <!-- Accessibility button description -->
     <string name="btn_skip">Skip</string>
     <!-- Accessibility button description -->
     <string name="btn_prev">Previous</string>
     <!-- Accessibility button description -->
     <string name="btn_queue">View play queue</string>
+    <!-- Accessibility button description -->
+    <string name="btn_close">Close</string>
 
     <!-- Accessibility overflow button. Example: "<Spice Girls> options"-->
     <string name="btn_options">%s options</string>

@@ -101,12 +101,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 TabsAdapter tabsAdapter = new TabsAdapter(getContext());
 
-                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback((fromPosition, toPosition) -> {
-                    tabsAdapter.moveItem(fromPosition, toPosition);
-                }, (fromPosition, toPosition) -> {
-                    tabsAdapter.updatePreferences();
-                }, () -> {
-                }));
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback(tabsAdapter::moveItem, (fromPosition, toPosition) -> tabsAdapter.updatePreferences(), () -> {}));
 
                 itemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -427,6 +422,16 @@ public class SettingsFragment extends PreferenceFragment {
                 PreferenceGroup preferenceGroup = (PreferenceGroup) findPreference("display_group");
                 if (preferenceGroup != null) {
                     preferenceGroup.removePreference(openOnClickPreference);
+                }
+            }
+        }
+
+        if (!ShuttleUtils.hasLollipop()) {
+            PreferenceScreen preferenceScreen = getPreferenceScreen();
+            if (preferenceScreen != null) {
+                Preference notificationPreference = preferenceScreen.findPreference("pref_category_notifications");
+                if (notificationPreference != null) {
+                    preferenceScreen.removePreference(notificationPreference);
                 }
             }
         }

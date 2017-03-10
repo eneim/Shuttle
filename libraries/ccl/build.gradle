@@ -15,60 +15,63 @@
  */
 
 buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath gradlePlugins.android
-    }
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath gradlePlugins.android
+  }
 }
 
 repositories {
-    mavenCentral()
-    flatDir {
-        dirs 'libs'
-    }
+  mavenCentral()
+  flatDir {
+    dirs 'libs'
+  }
 }
 
 apply plugin: 'com.android.library'
 
 ext {
-    versionName = '2.9.1'
+  versionName = '2.9.1'
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
-    publishNonDefault true
+  compileSdkVersion versions.compileSdk
+  buildToolsVersion versions.buildTools
+  publishNonDefault true
 
-    defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 25
+  defaultConfig {
+    minSdkVersion 10
+    targetSdkVersion 25
+  }
+
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      java.srcDirs = ['src']
+      res.srcDirs = ['res']
     }
+  }
 
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            res.srcDirs = ['res']
+  buildTypes {
+    debug {
+      libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+          output.outputFile = new File(output.outputFile.parent, output.outputFile.name.
+              replace(".aar", "-${versionName}.aar"))
         }
+      }
     }
+  }
 
-    buildTypes {
-        debug {
-            libraryVariants.all { variant ->
-                variant.outputs.each { output ->
-                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.
-                            replace(".aar", "-${versionName}.aar"))
-                }
-            }
-        }
-
-    }
+  lintOptions {
+    abortOnError false
+  }
 }
 
 dependencies {
-    compile libs.appcompat
-    compile libs.mediarouter
-    compile libs.chromecast
+  compile libs.appcompat
+  compile libs.mediarouter
+  compile libs.chromecast
 }

@@ -2,6 +2,8 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE.md)
 [![API](https://img.shields.io/badge/API-16%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=16)
+[![Build Status](https://travis-ci.org/timusus/Shuttle.svg?branch=dev)](https://travis-ci.org/timusus/Shuttle)
+[![Slack invite](http://shuttle-slack-inviter.herokuapp.com/badge.svg)](http://shuttle-slack-inviter.herokuapp.com)
 
 Shuttle is an open source, local music player for Android.
 
@@ -12,7 +14,8 @@ Shuttle comes in two flavours:
 
 The free version includes an option to upgrade via an IAP, which unlocks the features otherwise available in Shuttle+.
 
-#### Features
+
+##### Features
 
 - Local playback only (based on the MediaStore)
 - Built in equalizer
@@ -24,7 +27,7 @@ The free version includes an option to upgrade via an IAP, which unlocks the fea
 - Album-artist support
 - Artwork scraping (Last.FM & iTunes)
 
-Paid features:
+##### Paid features:
 
 - Tag editing
 - Folder browsing
@@ -33,46 +36,9 @@ Paid features:
 - Additional artwork editing options
 
 
-#### Future:
+#### Contributing:
 
-Here's a list of some of the things I'd like to work towards.
-
-- Smart playlists
-	
-	The ability to pick certain criteria, and have Shuttle automatically populate a playlist to match would be great. Particularly 'songs in this genre, from year x to year y'. That type of thing.
-
-- Replay gain
-	
-	There have been many requests for volume normalisation over the years.
-	Currently considering using a 3rd party Media Player such as [SuperPowered](http://superpowered.com/) (but it has limited filetype support)
-
-- Crossfade
-	
-	My guess is this would be done by managing two MediaPlayer instances, and their volume. Needs to be implemented in such a way that Gapless still works properly for those who don't use crossfade.
-
-- Improved equalizer
-	
-	The current EQ is based off of CyanogenMods EQ (which I believe is based off the native Android EQ). It's buggy, doesn't work for everyone, and doesn't sound that good on most devices.
-
-- Weaning off of the MediaStore
-
-	The MediaStore is the worst thing about Shuttle. It's buggy. Slow to update. It doesn't scan certain paths. Often it doesn't pickup song/album year information. It doesn't tidy up genres when they no longer exist. Worst of all, it makes the FileBrowser almost useless. Shuttle is coupled so tightly to the MediaStore that a song cannot be played unless it is present in the MediaStore. 
-
-- UI Improvements
-	
-	I'm currently in the midst of reworking the 'now playing' screen, which should make it look a bit better. I've also done some work on the artist detail screen, with the hopes of making albums expandable/collapsible.
-
-- Add support for pluggable media sources (including streaming sources)
-
-	This kind of ties in with the point above (and depends on it). It would be the greatest thing ever to have support for pluggable sources, so I could begin working on, for example, a DLNA plugin, Google Drive plugin, Spotify plugin, or just whatever.
-
-- Add tests
-	
-	There are 0 tests in Shuttle. I would almost be ashamed except - well, I don't exactly how to write unit tests, and I don't know what to test. If someone could add a couple of tests to give me an idea of how it's done, I'll gladly start building upon them.
-
-- Cleaning up / modernising the codebase
-
-	I'd like to start using dependency injection, mostly just to get an understanding of how to use it. There's plenty more RX-ifying to be done as well.
+See the [Contributing](.github/CONTRIBUTING.md) document. This is/will become a good resource if you're just wondering how the app works.
 
 
 #### History:
@@ -100,4 +66,4 @@ Secondly, I don't feel like I'm able to dedicate as much time to the project as 
 
 #### License
 
-Shuttle Music Player is released under the GNU General Public License v3.0 (GPLv3), which can be found here: [License](https://github.com/timusus/Shuttle/blob/master/LICENSE.md)
+Shuttle Music Player is released under the GNU General Public License v3.0 (GPLv3), which can be found here: [License](LICENSE.md)

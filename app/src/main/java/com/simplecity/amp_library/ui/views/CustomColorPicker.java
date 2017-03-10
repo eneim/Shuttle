@@ -2,9 +2,9 @@ package com.simplecity.amp_library.ui.views;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -19,15 +19,13 @@ public class CustomColorPicker extends FrameLayout
         implements SeekBar.OnSeekBarChangeListener,
         TextWatcher {
 
-    private static final String TAG = "ColorPicker";
-
     public int color;
 
     private View colorView;
 
-    private SizableSeekBar redSeekBar;
-    private SizableSeekBar greenSeekBar;
-    private SizableSeekBar blueSeekBar;
+    private AppCompatSeekBar redSeekBar;
+    private AppCompatSeekBar greenSeekBar;
+    private AppCompatSeekBar blueSeekBar;
 
     private TextView redValue;
     private TextView greenValue;
@@ -44,18 +42,18 @@ public class CustomColorPicker extends FrameLayout
 
         colorView = customView.findViewById(R.id.view);
 
-        redSeekBar = (SizableSeekBar) findViewById(R.id.seekbarRed);
-        ThemeUtils.themeSeekBar(context, redSeekBar);
+        redSeekBar = (AppCompatSeekBar) findViewById(R.id.seekbarRed);
+        ThemeUtils.themeSeekBar(redSeekBar);
         redSeekBar.setMax(255);
         redSeekBar.setOnSeekBarChangeListener(this);
 
-        greenSeekBar = (SizableSeekBar) findViewById(R.id.seekbarGreen);
-        ThemeUtils.themeSeekBar(context, greenSeekBar);
+        greenSeekBar = (AppCompatSeekBar) findViewById(R.id.seekbarGreen);
+        ThemeUtils.themeSeekBar(greenSeekBar);
         greenSeekBar.setMax(255);
         greenSeekBar.setOnSeekBarChangeListener(this);
 
-        blueSeekBar = (SizableSeekBar) findViewById(R.id.seekbarBlue);
-        ThemeUtils.themeSeekBar(context, blueSeekBar);
+        blueSeekBar = (AppCompatSeekBar) findViewById(R.id.seekbarBlue);
+        ThemeUtils.themeSeekBar(blueSeekBar);
         blueSeekBar.setMax(255);
         blueSeekBar.setOnSeekBarChangeListener(this);
 

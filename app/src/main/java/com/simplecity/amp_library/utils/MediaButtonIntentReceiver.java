@@ -1,9 +1,13 @@
 package com.simplecity.amp_library.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AsyncPlayer;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -11,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.view.KeyEvent;
 
+import com.simplecity.amp_library.R;
 import com.simplecity.amp_library.playback.MusicService;
 import com.simplecity.amp_library.ui.activities.MainActivity;
 
@@ -26,11 +31,37 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
     private static final int LONG_PRESS_DELAY = 1000;
     private static final int DOUBLE_CLICK = 800;
 
-    private static PowerManager.WakeLock mWakeLock = null;
-    static int mClickCounter = 0;
-    static long mLastClickTime = 0;
-    static boolean mDown = false;
-    static boolean mLaunched = false;
+    private static PowerManager.WakeLock wakeLock = null;
+    static int clickCounter = 0;
+    static long lastClickTime = 0;
+    static boolean down = false;
+    static boolean launched = false;
+
+    /**
+     * Play a beep sound.
+     */
+    private static void beep(Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("pref_headset_beep", true)) {
+            AsyncPlayer beepPlayer = new AsyncPlayer("BeepPlayer");
+            Uri beepSoundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                    context.getResources().getResourcePackageName(R.raw.beep) + '/' +
+                    context.getResources().getResourceTypeName(R.raw.beep) + '/' +
+                    context.getResources().getResourceEntryName(R.raw.beep));
+
+            if (ShuttleUtils.hasMarshmallow()) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        // Could use AudioAttributes.ASSISTANCE_SONIFICATION here, since this represents a button press type action..
+                        // However, that seems to play our audio a little too quietly (and the beep track is already adjusted to be relatively quiet).
+                        // So let's just treat it as music, which will use the user's music stream's volume anyway.
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build();
+                beepPlayer.play(context, beepSoundUri, false, audioAttributes);
+            } else {
+                beepPlayer.play(context, beepSoundUri, false, AudioManager.STREAM_MUSIC);
+            }
+        }
+    }
 
     public static class MediaButtonReceiverHelper {
         public static void onReceive(Context context, Intent intent) {
@@ -76,12 +107,12 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
 
                 if (command != null) {
                     if (action == KeyEvent.ACTION_DOWN) {
-                        if (mDown) {
+                        if (down) {
                             if ((MusicService.MediaButtonCommand.TOGGLE_PAUSE.equals(command) ||
                                     MusicService.MediaButtonCommand.PLAY.equals(command))) {
-                                if (mLastClickTime != 0 && eventTime - mLastClickTime > LONG_PRESS_DELAY) {
+                                if (lastClickTime != 0 && eventTime - lastClickTime > LONG_PRESS_DELAY) {
                                     acquireWakeLockAndSendMessage(context,
-                                            mHandler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context), 0);
+                                            handler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context), 0);
                                 }
                             }
                         } else if (event.getRepeatCount() == 0) {
@@ -92,31 +123,31 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
 
                             // The service may or may not be running, but we need to send it a command
                             if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK) {
-                                if (eventTime - mLastClickTime >= DOUBLE_CLICK) {
-                                    mClickCounter = 0;
+                                if (eventTime - lastClickTime >= DOUBLE_CLICK) {
+                                    clickCounter = 0;
                                 }
 
-                                mClickCounter++;
+                                clickCounter++;
 
-                                mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
+                                handler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
 
-                                Message msg = mHandler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
+                                Message msg = handler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, clickCounter, 0, context);
 
-                                long delay = mClickCounter < 3 ? DOUBLE_CLICK : 0;
-                                if (mClickCounter >= 3) {
-                                    mClickCounter = 0;
+                                long delay = clickCounter < 3 ? DOUBLE_CLICK : 0;
+                                if (clickCounter >= 3) {
+                                    clickCounter = 0;
                                 }
-                                mLastClickTime = eventTime;
+                                lastClickTime = eventTime;
                                 acquireWakeLockAndSendMessage(context, msg, delay);
                             } else {
                                 startService(context, command);
                             }
-                            mLaunched = false;
-                            mDown = true;
+                            launched = false;
+                            down = true;
                         }
                     } else {
-                        mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
-                        mDown = false;
+                        handler.removeMessages(MSG_LONGPRESS_TIMEOUT);
+                        down = false;
                     }
 
                     releaseWakeLockIfHandlerIdle();
@@ -125,18 +156,18 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
         }
     }
 
-    static Handler mHandler = new Handler() {
+    static Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_LONGPRESS_TIMEOUT:
-                    if (!mLaunched) {
+                    if (!launched) {
                         final Context context = (Context) msg.obj;
                         final Intent intent = new Intent();
                         intent.setClass(context, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         context.startActivity(intent);
-                        mLaunched = true;
+                        launched = true;
                     }
                     break;
 
@@ -161,6 +192,9 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
 
                     if (command != null) {
                         final Context context = (Context) msg.obj;
+                        if (MusicService.MediaButtonCommand.NEXT.equals((command))) {
+                            beep(context);
+                        }
                         startService(context, command);
                     }
                     break;
@@ -186,27 +220,27 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
     }
 
     static void acquireWakeLockAndSendMessage(Context context, Message msg, long delay) {
-        if (mWakeLock == null) {
+        if (wakeLock == null) {
             Context appContext = context.getApplicationContext();
             PowerManager pm = (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
-            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Headset button");
-            mWakeLock.setReferenceCounted(false);
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Headset button");
+            wakeLock.setReferenceCounted(false);
         }
 
         // Make sure we don't indefinitely hold the wake lock under any circumstances
-        mWakeLock.acquire(10000);
+        wakeLock.acquire(10000);
 
-        mHandler.sendMessageDelayed(msg, delay);
+        handler.sendMessageDelayed(msg, delay);
     }
 
     static void releaseWakeLockIfHandlerIdle() {
-        if (mHandler.hasMessages(MSG_LONGPRESS_TIMEOUT) || mHandler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT)) {
+        if (handler.hasMessages(MSG_LONGPRESS_TIMEOUT) || handler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT)) {
             return;
         }
 
-        if (mWakeLock != null) {
-            mWakeLock.release();
-            mWakeLock = null;
+        if (wakeLock != null) {
+            wakeLock.release();
+            wakeLock = null;
         }
     }
 }

@@ -77,26 +77,26 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:singleLine="true"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white"
+                            android:maxLines="1" />
 
                         <TextView
                             android:id="@+id/current_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical|right"
-                            android:singleLine="true"
                             android:text="--:--"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white"
+                            android:maxLines="1" />
 
                         <TextView
                             android:id="@+id/total_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical|right"
-                            android:singleLine="true"
                             android:text=" / --:--"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white"
+                            android:maxLines="1" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -192,15 +192,15 @@
 
                 </LinearLayout>
 
-                <com.simplecity.amp_library.ui.views.SizableSeekBar
+                <android.support.v7.widget.AppCompatSeekBar
                     android:id="@+id/seekbar"
-                    style="@style/SeekBar"
+                    android:progress="0"
+                    style="@style/SeekBarNoPadding"
+                    android:thumbOffset="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@id/textContainer"
                     android:layout_marginBottom="-9dp"
-                    android:layout_marginLeft="-16.5dp"
-                    android:layout_marginRight="-16.5dp"
                     android:indeterminate="false" />
 
             </RelativeLayout>
@@ -221,7 +221,9 @@
             <FrameLayout
                 android:id="@+id/queue_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
         </RelativeLayout>
 
     </LinearLayout>
